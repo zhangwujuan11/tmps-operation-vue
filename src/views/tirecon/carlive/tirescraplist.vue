@@ -23,14 +23,14 @@
 		  		  </el-select>
 		  		  </el-form-item> -->
 		  		  <el-form-item label="胎号">
-		  			<el-select
-		  			placeholder="请输入胎号" 
-		  			v-model="queryform.tireNo"
-		  			filterable
-		  			:clearable="true"
-		  			>
-		  			  <el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
-		  			</el-select>
+		  			<el-select v-model="queryform.tireNo"
+		  				filterable clearable placeholder="请选择"
+		  				allow-create
+		  				:default-first-option="true"
+		  				@blur="Nameblur($event)"
+		  				default-first-option>
+		  				<el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
+		  			 </el-select>
 		  		  </el-form-item>
 		  		  <el-form-item label="轮胎品牌">
 		  		    <el-select
@@ -218,6 +218,9 @@
 	const questionContentt=ref([])//未处理的使用问题数据
 	const newtirechangeneddata=ref({})
 	const cartireNo=ref('')//点击处理当前的胎号
+	function Nameblur(e) {
+		queryform.value.tireNo=e.target.value
+	   }
 	// 获取table数据
 	function getList(){
 		getTiresdaichuli(queryform.value).then(res=>{
@@ -231,6 +234,9 @@
 		stockStatus_tire.value.find((item)=>{
 		  if(item.value === i){
 			form.value.tireMaintenanceDetailBos[0].stockStatusCn=item.label
+			if(item.value==50){
+				form.value.tireMaintenanceDetailBos[0].isRenovate = 1;
+			}
 		  }
 		})
 	}
@@ -325,6 +331,12 @@
 	function subform(){
 		if(form.value.tireMaintenanceDetailBos[0].stockStatus == '' ||form.value.tireMaintenanceDetailBos[0].stockStatus == null){
 			ElMessage.error("请选择轮胎去向")
+			return false
+		}else if(form.value.tireMaintenanceDetailBos[0].stockStatus == '50' && !form.value.tireMaintenanceDetailBos[0].scrappingType){
+			console.log(form.value.tireMaintenanceDetailBos[0].stockStatus);
+			console.log(form.value.tireMaintenanceDetailBos[0].scrappingType);
+			
+			ElMessage.error("请选择报废类型")
 			return false
 		}else{
 			addtiretrue(form.value).then(res=>{

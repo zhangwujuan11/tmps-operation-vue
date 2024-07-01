@@ -137,7 +137,7 @@
 	   </div>
     </el-dialog>
 	<!-- echart -->
-	<Echarts :echartsneeddata="echartsneeddata" :echartclickinfo="echartclickinfo" :carid="carid" ></Echarts>
+	<Echartstwo :echartsneeddata="echartsneeddata" :echartclickinfo="echartclickinfo" :carid="carid" ></Echartstwo>
   </div>
 </template>
 
@@ -150,7 +150,7 @@
 	import {vehicleNo} from '@/api/systensettings'
 	import { useRouter } from "vue-router";
 	import { dilog } from '../../store/dilog'
-	import Echarts from '@/components/newnew/echarts.vue'
+	import Echartstwo from '@/components/newnew/echartstwo.vue'
 	const router = useRouter();
 	const { proxy } = getCurrentInstance();
 	const { alarm_type } = proxy.useDict("alarm_type");
@@ -196,7 +196,7 @@
 		echartclickinfo.value=Number(i.tirePosition) 
 		echartshowinfo(carid.value).then(data=>{
 			echartsneeddata.value=data.data
-			dilogs.$patch({ echarts: true })
+			dilogs.$patch({ echartstwo: true })
 		})
 	}
 	// 报警详情

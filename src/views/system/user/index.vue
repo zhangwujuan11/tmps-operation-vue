@@ -224,7 +224,7 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-                     <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password />
+                     <el-input v-model="form.password" placeholder="请输入用户密码" maxlength="20"/>
                   </el-form-item>
                </el-col>
             </el-row>
@@ -267,7 +267,7 @@
                      </el-select>
                   </el-form-item>
                </el-col>
-               <el-col :span="12">
+               <el-col :span="12" v-if="form.roleIds && form.roleIds[0] != 2">
                   <el-form-item label="角色" prop="roleIds">
                      <el-select v-model="form.roleIds" multiple placeholder="请选择">
                         <el-option

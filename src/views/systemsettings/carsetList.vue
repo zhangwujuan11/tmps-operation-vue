@@ -38,7 +38,7 @@
 		<el-form-item label="指令状态">
 		  <el-select placeholder="选择" v-model="from.status" >
 		   <el-option label="全部" value=""/>
-		   <el-option label="已完成" :value="1"/>
+		   <el-option label="已完成" :value="20002"/>
 		   <el-option label="下发中" :value="0"/>
 		  </el-select>
 		</el-form-item>
@@ -99,7 +99,7 @@
 			 <el-input disabled  v-model="subfrom.deviceId"></el-input>
 			</el-form-item>
 			<el-form-item label="标准气压值">
-			 <el-input disabled v-model="subfrom.standardPressure"></el-input>
+			 <el-input  v-model="subfrom.standardPressure" placeholder="单位bar"></el-input>
 			</el-form-item>
 			 <p class="line"><el-icon :size="20" color="#0054a6"><Flag /></el-icon>一级报警阈值(严重)</p>
 			<p style="width: 100%;color: red;margin-bottom: 10px;">注：此设置会同步设备阈值</p>
@@ -251,6 +251,14 @@
 	 function subfromt (){
 		 proxy.$refs["queryRef"].validate(valid => {
 		   if (valid) {
+			   if(Number(subfrom.value.lowPressure)  > Number(subfrom.value.highPressure) ){
+				    ElMessage.error("低压不能高于高压")
+					return false
+			   }
+			   if(Number( subfrom.value.lowPressure2) > Number(subfrom.value.highPressure2) ){
+				    ElMessage.error("低压不能高于高压")
+					return false
+			   }
 			  thresholdupdate({
 			  			 ids:userId.value || ids.value,
 			  			 list:subfrom.value

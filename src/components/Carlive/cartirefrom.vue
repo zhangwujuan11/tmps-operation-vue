@@ -37,12 +37,12 @@
 					<el-select
 					v-if="!enabled"
 					 placeholder="请输入花纹型号" 
-					 v-model="xinhaovalue"
+					 v-model="frome.patternId"
 					 filterable
 					 :clearable="true"
-					@change="brandrxinhaovalue"
+					@change="brandrxinhaovalue($event)"
 					>
-					 <el-option :label="item.paramName" :value="`${item.paramId},${item.paramName}`"  v-for="(item,index) in xinhao" :key="index" />
+					 <el-option :label="item.paramName" :value="Number(item.paramId)"  v-for="(item,index) in xinhao" :key="index" />
 					</el-select>
 					<!-- <el-input v-model="frome.pattern" placeholder="请输入花纹型号"  ></el-input> -->
 					<span v-if="enabled">{{frome.pattern}}</span>
@@ -57,7 +57,7 @@
 				</el-form-item>
 				<el-form-item label="累计里程" prop="totalMileage">
 					<el-input type="number" v-model="frome.totalMileage" placeholder="请输入累计里程" v-if="!enabled"></el-input>
-					<span style="color: red;" v-if="enabled">{{frome.totalMileage +"km" || 'NA'}}</span>
+					<span style="color: red;" v-if="enabled">{{frome.totalMileage  || '0'}}km</span>
 				</el-form-item>
 				<el-form-item label="DOT" prop="dot">
 					<el-input v-model="frome.dot" v-if="!enabled"></el-input>
@@ -84,6 +84,10 @@
 				<el-form-item label="RFID标签号" >
 					<span v-if="!frome.rfidCode" @click="lise(frome.rfidCode,frome.tireNo,frome.tireId)" style="color: red;cursor: pointer;">暂无[绑定]</span>
 					<span @click="lise(frome.rfidCode,frome.tireNo,frome.tireId)" v-else style="color: green;cursor: pointer;">{{frome.rfidCode}} [解除]</span>
+				</el-form-item>
+				<el-form-item label="自编号" >
+					<el-input v-model="frome.insideTireNo" placeholder="请输入速度级别" v-if="!enabled"></el-input>
+					<span v-if="enabled">{{frome.insideTireNo|| 'NA'}}</span>
 				</el-form-item>
 				<el-form-item label="状态" prop="stockStatus">  
 					<!-- <el-select placeholder="状态" v-model="frome.stockStatus" filterable remote :clearable="true" disabled>
@@ -244,9 +248,11 @@
 		})
 	}
 	function brandrxinhaovalue(val){//处理花纹型号数据
-		let [id,name] = val.split(',')
-		frome.value.patternId = id
-		frome.value.pattern = name
+	props.xinhao.map(item=>{
+		if(item.paramId == val){
+			frome.value.pattern=item.paramName
+		}
+	})
 	}
 	const guige=ref([])//规格
 	const jiebangma=ref(false)
@@ -324,6 +330,7 @@
 	
 	watch(() => props.updateform, value => {
 		frome.value = value
+		console.log(frome.value)
 		frome.value.consone=frome.value.tireBrandId + ',' + frome.value.tireBrandName
 		proxy.$refs["menuRef"].clearValidate();
 	})
@@ -422,9 +429,11 @@
 	}
 	onMounted(() => {
 		frome.value = props.updateform
+		console.log(frome.value)
 		pinpai.value = props.pinpai
 		houselist.value = props.houselist
 		frome.value.consone=frome.value.tireBrandId + ',' + frome.value.tireBrandName
+		
 		// console.log(frome.value)
 		// 规格
 		getSpecifications().then(re=>{

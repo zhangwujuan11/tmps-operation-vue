@@ -12,15 +12,15 @@
 		  </el-select>
 		  </el-form-item>
 		  <el-form-item label="胎号">
-			<el-select
-			placeholder="请输入胎号" 
-			v-model="queryform.tireNo"
-			filterable
-			:clearable="true"
-			>
-			  <el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
-			</el-select>
-		  </el-form-item>
+		    <el-select v-model="queryform.tireNo"
+		    	filterable clearable placeholder="请选择"
+		    	allow-create
+		    	:default-first-option="true"
+		    	@blur="Nameblur($event)"
+		    	default-first-option>
+		    	<el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
+		     </el-select>
+		    </el-form-item>
 		<div style="text-align: center;">
 		  <el-button type="primary" @click='getList'><i class="el-icon-search"></i> 查询</el-button>
 		  <el-button @click="exportable" v-hasPermi="['tpms:maintenance:export']"><i class="el-icon-upload2"></i>导出</el-button>
@@ -73,7 +73,9 @@
 			total.value=res.data.total
 		})
 	}
-	
+	function Nameblur(e) {
+		queryform.value.tireNo=e.target.value
+	   }
 	// 导出
 	function exportable(){
 		expotires(queryform.value).then(res=>{

@@ -1,5 +1,5 @@
 <template>
-	<el-dialog v-model="dilogs.echarts" width="80%" append-to-body>
+	<el-dialog v-model="dilogs.echartstwo" width="80%" append-to-body>
   <div class="con">
     <div class="con-left">
       <div class="carinfo">
@@ -36,11 +36,11 @@
     </div>
     <div class="con-right">
       <h3>胎压胎温趋势图</h3>
-        <div id="chartthree" ref="chartthree" style="height:49%;width: 100%;"></div>
-       <div id="chartfour" ref="chartthree" style="height:48%;width: 100%;"></div>
+        <div id="charttwothree" ref="charttwothree" style="height:49%;width: 100%;"></div>
+       <div id="charttwofour" ref="charttwofour" style="height:48%;width: 100%;"></div>
 	   
-	   <div id="chartfive" ref="chartfive" style="height:49%;width: 100%;background-color: white;" v-show="ishaiba"></div>
-	   <div id="chartsix" ref="chartsix" style="height:48%;width: 100%;background-color: white;" v-show="issudu"></div>
+	   <div id="charttwofive" ref="charttwofive" style="height:49%;width: 100%;background-color: white;" v-show="ishaiba"></div>
+	   <div id="charttwosix" ref="charttwosix" style="height:48%;width: 100%;background-color: white;" v-show="issudu"></div>
     </div>
   </div>
   </el-dialog>
@@ -135,7 +135,7 @@
 					   }
 					   ydata.push(obj)
 				   }
-				drawLine('chartthree',ydata,"压力值（bar）",namearr)
+				drawLine('charttwothree',ydata,"压力值（bar）",namearr)
 		})
 	}
 	function getLits2(){
@@ -176,7 +176,7 @@
 				    					   }
 				    					   ydata.push(obj)
 				    }
-				   drawLine('chartfour',ydata,"温度值（℃）",namearr)
+				   drawLine('charttwofour',ydata,"温度值（℃）",namearr)
 		})
 	}
    function getLits(){
@@ -368,7 +368,7 @@
                     }
                 }]
             };
-            var chartHB = echarts.init(document.getElementById("chartfive"));
+            var chartHB = echarts.init(document.getElementById("charttwofive"));
             chartHB.setOption(option, true);
             window.addEventListener("resize", function () {
                 chartHB.resize();
@@ -476,7 +476,7 @@
 	                }
 	            }]
 	        };
-	        var chartHB = echarts.init(document.getElementById("chartsix"));
+	        var chartHB = echarts.init(document.getElementById("charttwosix"));
 	        chartHB.setOption(option, true);
 	        window.addEventListener("resize", function () {
 	            chartHB.resize();
@@ -490,7 +490,7 @@
 	  
 	  // 监听echarts的dilog
 	 dilogs.$subscribe((mutation, state) => {
-		 if(state.echarts){
+		 if(state.echartstwo){
 			 setTimeout(function (){
 				 checkedCities.value.push(props.echartclickinfo)
 				getLits()

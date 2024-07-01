@@ -40,12 +40,12 @@
 		<el-form-item label="版本号">
 		  <el-input placeholder="请输入版本号"  v-model="queryform.version" ></el-input>
 		</el-form-item>
-		<el-form-item label="定位开关">
+		<!-- <el-form-item label="定位开关">
 		  <el-select  v-model="queryform.autoFlags" clearable>
 		    <el-option label="开" :value="0" />
 		    <el-option label="关" :value="1" />
 		  </el-select>
-		</el-form-item>
+		</el-form-item> -->
 		<!-- <el-form-item label="前桥中继器">
 		  <el-select  v-model="radio2" clearable>
 		    <el-option :label="item.name" :value="item.value" v-for="(item,index) in dictList" :key="index" />
@@ -67,11 +67,11 @@
       <el-table-column label="接收器ID"  align="center" prop="deviceId" />
       <el-table-column label="面板ID" align="center" prop="panelId" />
       <el-table-column label="版本号" align="center" prop="version" />
-      <el-table-column label="自动定位开关" align="center" prop="autoFlags">
+      <!-- <el-table-column label="自动定位开关" align="center" prop="autoFlags">
 		  <template #default="scope">
 			  {{scope.row.autoFlags==0? '开':'关' }}
 		  </template>
-		</el-table-column>
+		</el-table-column> -->
       <el-table-column label="定位轮位数" align="center" prop="positionNumber" />
      <!-- <el-table-column label="前桥中继器" align="center" prop="remark" />
 	  <el-table-column label="后桥中继器" align="center" prop="remark" /> -->

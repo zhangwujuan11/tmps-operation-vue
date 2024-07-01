@@ -384,3 +384,12 @@ export function exlichen(data){
 		params:data
 	})
 }
+
+// 里程总里程
+export function zlic(data){
+	return  request({
+		url:'/v1/tire/gps/mileageSum',
+		method:'get',
+		params:data
+	})
+}

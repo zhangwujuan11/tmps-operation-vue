@@ -222,10 +222,10 @@
 	};
 	
 	function downloadone(){
-		window.open('https://wisdom-nd-g104.obs.cn-east-3.myhuaweicloud.com:443/%E6%9C%AA%E5%AE%89%E8%A3%85%E8%BD%AE%E8%83%8E%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF20231116.xls')
+		window.open('https://tpms.5i84.cn/img/moban/未安装轮胎导入模板20240115.xls')
 	}
 	function downloadtwo(){
-		window.open('https://wisdom-nd-g104.obs.cn-east-3.myhuaweicloud.com:443/%E5%B7%B2%E5%AE%89%E8%A3%85%E8%BD%AE%E8%83%8E%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF20231116.xls')
+		window.open('https://tpms.5i84.cn/img/moban/已安装轮胎导入模板20240115.xls')
 	}
 </script>
 

@@ -58,7 +58,7 @@
     <!-- 表格操作 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain  :disabled="multiple" @click="handleAdd"
+        <el-button type="primary" plain :disabled="multiple" @click="handleAdd"
           v-hasPermi="['tpms:vehicles:edit']">车辆调拨</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -75,10 +75,10 @@
 	  </el-col>
     </el-row>
 
-    <el-table  :data="tableData" v-loading="loading"  @selection-change="handleSelectionChange">
+    <el-table  :data="tableData" v-loading="loading"  @selection-change="handleSelectionChange" @sort-change="headerclick($event)">
       <el-table-column type="selection" align="center" />
-      <el-table-column label="序号" align="center" type="index"  width="55"/>
-      <el-table-column label="车牌号" sortable align="center" prop="vehicleNo">
+      <el-table-column label="序号" sortable="custom" align="center" prop="number"  width="55"/>
+      <el-table-column label="车牌号" sortable="custom" align="center" prop="vehicleNo">
       </el-table-column>
       <el-table-column label="车辆品牌" sortable align="center" prop="brand" />
       <el-table-column label="所属组织" sortable align="center" prop="fleetName" />
@@ -115,7 +115,7 @@
       :total="total"
       v-model:page="ruleForm.pageNum"
       v-model:limit="ruleForm.pageSize"
-      @pagination="getList"
+      @pagination="pagegetlist"
    />
     <!-- 轮胎详情 -->
     <el-dialog :title="title" v-model="open" width="80%" append-to-body @close="openclose" :close-on-click-modal="false">
@@ -379,7 +379,7 @@
 	      </template>
 	   </el-upload>
 	   请选择版本：
-	   <el-radio-group v-model="versionType">
+	   <el-radio-group v-model="versionType" @change="ifchange">
 	     <el-radio :label="5002">硬件版</el-radio>
 	     <el-radio :label="5001">纯软件版</el-radio>
 	   </el-radio-group>
@@ -434,9 +434,57 @@
 	  // 上传的地址
 	  url: import.meta.env.VITE_APP_BASE_API + "/v1/vehicles/actions/import?versionType=" + versionType.value
 	});
+	function ifchange(){
+		upload.url=import.meta.env.VITE_APP_BASE_API + "/v1/vehicles/actions/import?versionType=" + versionType.value
+	}
+	// 排序点击
+	function headerclick(e){
+		loading.value = true
+		// e.preventDefault();
+		let num=e.column.no
+		let isup= ''
+		if(e.order== 'ascending'){
+			isup=1
+		}else if(e.order== 'descending'){
+			isup=0
+		}else{
+			isup=''
+			num=''
+		}
+		ruleForm.value.fieldSort  = num
+		ruleForm.value.fieldSortFlag = isup
+		ruleForm.value.pageNum=1
+		ruleForm.value.pageSize=10
+		carlist(ruleForm.value).then(res=>{
+			loading.value = false
+				if(res.code ==200){
+					tableData.value=res.data.items
+					total.value=res.data.total
+					loading.value = false
+				}else{
+					ElMessage.error(res.message)
+					loading.value = false
+				}
+			})
+		}
 	// table数据
 	function getList(){
 		 loading.value = true
+		 ruleForm.value.fieldSort  = ''
+		 ruleForm.value.fieldSortFlag = ''
+		carlist(ruleForm.value).then(res=>{
+			if(res.code ==200){
+				tableData.value=res.data.items
+				total.value=res.data.total
+				loading.value = false
+			}else{
+				ElMessage.error(res.message)
+				loading.value = false
+			}
+		})
+	}
+	function pagegetlist(){
+		loading.value = true
 		carlist(ruleForm.value).then(res=>{
 			if(res.code ==200){
 				tableData.value=res.data.items
@@ -755,7 +803,7 @@
 	})
 	
 	function mudow(){
-		window.open('https://wisdom-nd-g104.obs.cn-east-3.myhuaweicloud.com:443/%E8%BD%A6%E8%BE%86%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF20231116.xls')
+		window.open('https://tpms.5i84.cn/img/moban/车辆导入模板20240115.xls')
 	}
 	// 新增表单选项变化
 	const isdid=ref(false)//车分类是否可以操控

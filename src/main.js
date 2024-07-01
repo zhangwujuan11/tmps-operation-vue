@@ -13,6 +13,7 @@ import App from './App'
 import store from './store'
 import router from './router'
 import directive from './directive' // directive
+import print from 'vue3-print-nb'
 
 // 注册指令
 import plugins from './plugins' // plugins
@@ -78,6 +79,7 @@ app.use(store)
 app.use(plugins)
 app.use(elementIcons)
 app.component('svg-icon', SvgIcon)
+app.use(print)
 
 directive(app)
 

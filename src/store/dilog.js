@@ -12,6 +12,7 @@ export const dilog = defineStore('dilog', {
        alarmdilog:false,
        detaildilog:false,
        echarts:false,
+	    echartstwo:false,
        gaode:false,
 	   tirelist:false
      }

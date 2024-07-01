@@ -134,7 +134,7 @@
         		  <el-table-column label="花纹" align="center" prop="pattern" />
 				  <el-table-column label="修补金额" align="center" prop="cost ">
 						<template #default="scope">
-							<el-input v-model="scope.row.cost"  @change="goatao()" v-if="!ischange"  type="number"></el-input>
+							<el-input v-model="scope.row.cost"  @change="goatao()" v-if="!ischange"  onkeyup="value=this.value.replace(/\D+/g,'')"></el-input>
 							<!-- <span v-if="ischange">{{scope.row.cost}}</span> -->
 						</template>
 				  </el-table-column>
@@ -148,14 +148,14 @@
 							v-model="scope.row.contentId"
 							:clearable="true"
 							>
-							  <el-option :label="item.label" :value="item.value"  v-for="(item,index) in lifecycle_tire_repair" :key="index" />
+							  <el-option :label="item.label" :value="item.value" v-show="item.elTagClass!= 'null'"  v-for="(item,index) in lifecycle_tire_repair" :key="index" />
 							</el-select>
 							<!-- <span  v-if="ischange">{{scope.row.content}}</span> -->
 					  </template>
 				  </el-table-column>
 				  <el-table-column label="修补去向" align="center" prop="stockStatus"  width="150">
 					<template #default="scope">
-						<el-select v-if="!ischange" @change="selecstockStatusCn($event,scope.$index)" placeholder="轮胎去向" v-model="scope.row.stockStatus" clearable>
+						<el-select v-if="!ischange"  @change="selecstockStatusCn($event,scope.$index)" placeholder="轮胎去向" v-model="scope.row.stockStatus" clearable>
 							<el-option
 							   v-for="dict in stockStatus_tire"
 							   :key="dict.value"
@@ -179,10 +179,17 @@
         	</el-table>
 			<el-table v-if="ischange"  :data="from.tireMaintenanceDetailArrayResponse.items">
 				  <el-table-column label="胎号" align="center" prop="tireNo"/>
-				 <el-table-column label="品牌" align="center" prop="tireBrandName"/>
+				 <el-table-column label="品牌" align="center" prop="tireBrandName">
+					 <template #default="scope">
+						 {{pinpaich(scope.row.tireBrandId)}}
+					 </template>
+				</el-table-column>
 				  <el-table-column label="规格" align="center" prop="specificationsName" />
 				  <el-table-column label="花纹" align="center" prop="pattern" />
-				  <el-table-column label="修补金额" align="center" prop="cost ">
+				  <el-table-column label="修补金额" align="center" prop="cost" >
+				  <template #default="scope">
+				  		<span  v-if="ischange">{{scope.row.cost}}</span>
+				  </template>
 				  </el-table-column>
 				  <el-table-column label="修补内容" align="center" prop="contentId" width="150">
 					  <template #default="scope">
@@ -204,7 +211,7 @@
 			/>
         	<div style="width: 100%;display: flex;justify-content: left;flex-wrap: wrap;margin-top: 20px;">
         		<el-form-item label="总金额" prop="totalCost" v-if="!ischange">
-        		  <el-input  v-model="from.totalCost"  type="number"></el-input>
+        		  <el-input  v-model="from.totalCost"  onkeyup="value=this.value.replace(/\D+/g,'')"></el-input>
         		</el-form-item>
         		<el-form-item label="总金额" prop="totalCost" v-if="ischange">
         		  <span>{{from.totalCost}}</span>
@@ -414,6 +421,7 @@
 		
 	// 维护内容数据处理
 	function selectModel(i,index){
+		console.log(lifecycle_tire_repair.value,666)
 		lifecycle_tire_repair.value.find((item)=>{
 		  if(item.value === i){
 			from.value.tireMaintenanceDetailBos[index].content=item.label
@@ -549,12 +557,20 @@
 	        window.open(URL.createObjectURL(file));
 	    }
 	}
+	function pinpaich(e){
+		for(let i=0;i<pinpai.value.length;i++){
+			if(pinpai.value[i].paramId == e){
+				return pinpai.value[i].paramName
+			}
+		}
+	}
 	
 	onMounted(()=>{
+		
 		serchtire()
 		// 品牌
 		getTireBands().then(resss=>{
-			pinpai.value=resss.data.items
+			pinpai.value=resss.data
 		})
 		// 规格
 		getSpecifications().then(re=>{

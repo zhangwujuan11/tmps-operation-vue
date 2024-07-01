@@ -15,16 +15,13 @@
 		  </el-select>
 		</el-form-item>
         <el-form-item label="胎号">
-          <el-select 
-		  placeholder="请输入胎号" 
-		  v-model="queryform.tireNo"
-		   filterable
-		   remote
-		     :clearable="true"
-		   reserve-keyword
-		   :loading="loading"
-		  >
-             <el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
+         <el-select v-model="queryform.tireNo"
+         	filterable clearable placeholder="请选择"
+         	allow-create
+         	:default-first-option="true"
+         	@blur="Nameblur($event)"
+         	default-first-option>
+         	<el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
           </el-select>
         </el-form-item>
       <!--  <el-form-item label="处理人">
@@ -66,7 +63,7 @@
       <el-table-column label="中间花纹深度(mm)" sortable align="center" prop="middleTreadDepth" />
 	  <el-table-column label="右侧花纹深度(mm)" sortable align="center" prop="rightTreadDepth" />
 	  <el-table-column label="问题描述" align="center" prop="issueDescription" />
-	  <el-table-column label="检查时间" sortable align="center" prop="inspectionTime" />
+	  <el-table-column label="检查时间" sortable align="center" width="180" prop="inspectionTime" />
 	  <el-table-column label="状态" align="center" prop="processingStatus" >
 		<template #default="scope">
 		  	{{scope.row.processingStatus=='1'? "已处理":"未处理"}}
@@ -75,7 +72,7 @@
         <el-table-column label="操作" align="center" class-name="small-padding" width="150">
 		   <template #default="scope">
 			   <el-button
-			   v-if="scope.row.processingStatus != '1'"
+			   v-if="scope.row.processingStatus == '0'"
 			    link  type="primary"
 			    @click="handleUpdate(scope.row)"
 			   v-hasPermi="['tpms:inspection:edit']"><EditPen style="width: 1em; height: 1em; margin-right: 2px"></EditPen>处理</el-button>
@@ -224,6 +221,9 @@
 			})
 		})
 	}
+	function Nameblur(e) {
+		queryform.value.tireNo=e.target.value
+	   }
 	// 解码下载方法
 	function downloadFiles(data) {
 	    if (typeof window.chrome !== 'undefined') {

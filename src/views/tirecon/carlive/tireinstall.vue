@@ -73,7 +73,10 @@
 				  <span class="hubstyle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>轮毂已绑定传感器
 				  <span class="hubred">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>轮毂未绑定传感器
 				 </p>
-				<!-- <p>同步设备轮位同步状态：下发中...</p> -->
+				 <!-- <el-button>立即下发轮位</el-button>
+				<p>设备下挂状态：待下发</p>
+				 <el-button>同步设备轮位</el-button>
+				 <p>同步状态：下发中...</p> -->
 			</h4>
 			<div class="luntai">
 				<!-- 主车 -->
@@ -212,7 +215,7 @@
 						<el-input placeholder="单位元" v-model="scope.row.tireMaintenanceBo.tireMaintenanceDetailBos[0].cost"></el-input>
 					</template>
 				</el-table-column>
-				<el-table-column prop="tireBrandName" label="新胎花纹深度(mm)" align="center">
+				<el-table-column prop="depth" label="新胎花纹深度(mm)" align="center">
 					<template #default="scope">
 						{{scope.row.depth}}
 					</template>
@@ -222,7 +225,7 @@
 				</el-table-column> -->
 			</el-table>
 			<el-table :data="tableData" border style="width: 100%">
-				<el-table-column prop="createTime" label="安装时间" align="center">
+				<el-table-column prop="installTime" label="安装时间" align="center">
 				</el-table-column>
 				<el-table-column prop="specificationsName" label="规格" align="center">
 					<template #default="scope">
@@ -239,7 +242,9 @@
 						{{scope.row.tireMaintenanceBo.tireMaintenanceDetailBos[0].pattern}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="firstDepth" label="上次实测花纹深度(mm)"></el-table-column>
+				<el-table-column prop="measuredDepth" label="上次实测花纹深度(mm)">
+					
+				</el-table-column>
 				<!-- <el-table-column prop="depth" label="本次实测花纹深度(mm)" align="center">
 					<template #default="scope">
 						<el-input placeholder="单位mm" v-model="scope.row.depth"></el-input>
@@ -276,13 +281,14 @@
 				</el-table-column>
 				<el-table-column prop="pattern" label="问题类型" align="center"  v-if="tableData[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].scrappingType == '1'">
 					<template #default="scope">
-						<el-select placeholder="问题类型" v-model="scope.row.tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType">
+						<el-select placeholder="问题类型" @change="queschange($event)" v-model="scope.row.tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType">
 							<el-option label="质量问题" value="lifecycle_tire_quality_problem" ></el-option>
 							<el-option label="使用问题" value="lifecycle_tire_use_problem" ></el-option>
 						</el-select>
 					</template>
 				</el-table-column>
-				<el-table-column prop="pattern" label="质量问题" align="center"  v-if="tableData[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType == 'lifecycle_tire_quality_problem'">
+				<el-table-column prop="pattern" label="质量问题" align="center" 
+				 v-if="tableData[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType == 'lifecycle_tire_quality_problem'&& tableData[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].scrappingType == '1'">
 						<el-checkbox-group v-model="questionContent" @change="questionContentone($event)">
 						    <el-checkbox 
 							v-for="dict in lifecycle_tire_quality_problem"
@@ -291,7 +297,8 @@
 							>{{dict.label}}</el-checkbox>
 						  </el-checkbox-group>
 				</el-table-column>
-				<el-table-column prop="pattern" label="使用问题" align="center"  v-if="tableData[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType == 'lifecycle_tire_use_problem'">
+				<el-table-column prop="pattern" label="使用问题" align="center" 
+				 v-if="tableData[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType == 'lifecycle_tire_use_problem'&& tableData[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].scrappingType == '1'">
 						   <el-checkbox-group v-model="questionContentt" @change="questionContents($event)">
 						       <el-checkbox 
 						   	v-for="dict in lifecycle_tire_use_problem"
@@ -318,9 +325,9 @@
 				</el-table-column>
 				<el-table-column prop="totalMileage" label="累计里程(km)" align="center" />
 				<el-table-column prop="firstDepth" label="初测花纹深度(mm)" align="center" />
-				<el-table-column prop="depth" label="本次实测花纹深度(mm)" align="center">
+				<el-table-column prop="indexDepth" label="本次实测花纹深度(mm)" align="center">
 					<template #default="scope">
-						<el-input placeholder="单位mm" v-model="scope.row.depth"></el-input>
+						<el-input placeholder="单位mm" v-model="scope.row.indexDepth"></el-input>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作单位" align="center">
@@ -412,15 +419,26 @@
 				  </el-select>
 			    </el-form-item>
 			    <el-form-item label="胎号">
-					<el-select
+					<!-- <el-select
 					placeholder="请输入胎号" 
 					v-model="queryform.tireNo"
 					filterable
 					:clearable="true"
 					>
 					  <el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
-					</el-select>
+					</el-select> -->
+					<el-select v-model="queryform.tireNo"
+						filterable clearable placeholder="请选择"
+						allow-create
+						:default-first-option="true"
+						@blur="Nameblur($event)"
+						default-first-option>
+						<el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
+					 </el-select>
 			    </el-form-item>
+				<el-form-item label="自编号">
+				  <el-input placeholder="请输入自编号" v-model="queryform.insideTireNo"></el-input>
+				</el-form-item>
 			    <el-form-item label="质保周期">
 			      <el-select placeholder="请选择" v-model="queryform.qualityPeriod" clearable>
 			        <el-option label="正常" value="0" />
@@ -447,6 +465,7 @@
 					</template>
 				</el-table-column>
 			  <el-table-column label="胎号" align="center" prop="tireNo" />
+			  <el-table-column label="自编号" align="center" prop="insideTireNo" />
 			  <el-table-column label="所属组织" align="center" prop="companyName">
 			  </el-table-column>
 			  <el-table-column label="所属仓库" align="center" prop="warehouseName">
@@ -591,6 +610,9 @@
 			}
 		})
 	}
+	function Nameblur(e) {
+		queryform.value.tireNo=e.target.value
+	   }
 	const state = reactive({
 	  user: {},
 	  roleGroup: {},
@@ -645,6 +667,14 @@
 			return '纯软件版本'
 		}else if(e == 5002){
 			return '硬件版本'
+		}
+	}
+	
+	function queschange(i){
+		if(i=='lifecycle_tire_quality_problem'){
+			tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionTypeCN='质量问题'
+		}else if(i=='lifecycle_tire_use_problem'){
+			tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionTypeCN='使用问题'
 		}
 	}
 	function isRenovatechange(i){
@@ -804,8 +834,7 @@
 									for (let i = 0; i < item.rightTireCode.length; i++) {
 										item.rightTireCode[i].infodata = null
 										for (let j = 0; j < tirePosition.length; j++) {
-											if (tirePosition[j].installPosition == item.rightTireCode[i]
-												.positionCode) {
+											if (tirePosition[j].installPosition == item.rightTireCode[i].positionCode) {
 												item.rightTireCode[i].infodata = tirePosition[j]
 											}
 										}
@@ -864,7 +893,6 @@
 						}
 					})
 				})
-				
 			} else {
 				trailcarbox.value = false
 			}
@@ -922,6 +950,7 @@
 				lastInstallMileage:res.data.lastInstallMileage,
 				totalMileage:res.data.totalMileage,
 				measuredDepth:res.data.measuredDepth,
+				installTime:res.data.installTime,
 			tireMaintenanceBo:{
 				maintainer: Cookies.get("username"),//维护人,//维护人
 				maintenanceDate: date.getFullYear()+ '-' + mothod+ '-' + day,//维护日期
@@ -933,7 +962,6 @@
 			open.value=true
 		})
 	}
-	
 	// 安装提交
 	function addtire(){
 		// postfrom.value.vehicleId=vechid.value
@@ -941,7 +969,7 @@
 		postfrom.value.tireId=newtiretable.value[0].tireId
 		postfrom.value.installFee=newtiretable.value[0].installFee
 		postfrom.value.installPositionDesc=posied.value
-		let flag=/^[0-9]+(\.\d+)?$/
+		// let flag=/^[0-9]+(\.\d+)?$/
 		if(newtiretable.value[0].installFee<0){
 			ElMessage.error("安装费用不能为负数")
 			return false
@@ -958,8 +986,6 @@
 			})
 		}
 	}
-	
-	
    function	serchtireNo(){
 		tirelist(queryform.value).then(res=>{
 			// 车胎
@@ -998,11 +1024,9 @@
 	})
 	const rules=({
 		senderId: [{ required: true, message: "传感器ID不能为空", trigger: "blur" }],
-		senderType: [{ required: true, message: "绑定方式不能为空", trigger: "blur" }],
+		senderType: [{ required: true, message: "绑定方式不能为空", trigger: "blur" }]
 	  })
-	
 	const jiebangma=ref(false)
-	
 	// 传感器id
 	function chuango(i,tire,d){
 		if(tire == null || tire == ''){
@@ -1038,14 +1062,13 @@
 	function bangdingfun (){
 		proxy.$refs["menuRef"].validate(valid => {
 		  if (valid) {
-			 bangding(chuanfrom.value).then(res=>{
+			 bangding(chuanfrom.value).then(res => { 
 			 	if(res.code == 200){
 					chuanid.value=false
 					getpicture(vechid.value,chenindev.value)
 			 		tableData.value[0].senderId=chuanfrom.value.senderId
 					newtiretable.value[0].senderId=chuanfrom.value.senderId
 					ElMessage.success("绑定成功")
-			 		
 			 	}else{
 			 		ElMessage.error(res.message)
 			 	}
@@ -1056,7 +1079,7 @@
 	// 拆卸提交
 	function tiredetails(){
 		// let flag=/^[0-9]+(\.\d+)?$/
-		let meeslins=merlishi.value.depth
+		let meeslins=tableData.value[0].measuredDepth
 		if(tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].stockStatus == undefined){
 			ElMessage.error('请选择拆去方向')
 			return false
@@ -1069,18 +1092,22 @@
 		}else if(tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].scrappingType == "1" && tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType == undefined){
 			ElMessage.error('请选择问题类型')
 			return false
-		}else if(tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType != undefined && questionContent.value.length == 0 && questionContentt.value.length == 0 && tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].stockStatus == '50'){
+		}else if(
+		tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].questionType != undefined && 
+		questionContent.value.length == 0 && 
+		questionContentt.value.length == 0 && 
+		tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].stockStatus == '50' &&
+		tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].scrappingType == '1'){
 			ElMessage.error('请选择问题')
 			return false
 		}else if(tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].cost<0){
 			ElMessage.error('拆卸费用不能为负数')
 			return false
-		}
-		else if(tableData.value[0].depth>meeslins){
+		}else if(tableData.value[0].indexDepth>meeslins){
 			ElMessage.error('对不起，上次实测花纹深度是【' + meeslins + 'mm】您本次输入的实测花纹深度不能大于上次的实测花纹深度')
 			return false
-		} 
-		else{
+		}else{
+			tableData.value[0].depth=tableData.value[0].indexDepth
 			tableData.value[0].tireMaintenanceBo.totalCost=tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].cost
 			tableData.value[0].tireMaintenanceBo.tireMaintenanceDetailBos[0].tireId=tableData.value[0].tireId
 			tiredetail(tableData.value[0]).then(res=>{
@@ -1118,28 +1145,21 @@
 	:dee(.el-radio) {
 		margin-right: 5px;
 	}
-
-	:deep(.el-radio.is-bordered+.el-radio.is-bordered) {
+	:deep(.el-radio.is-bordered + .el-radio.is-bordered) {
 		margin-left: 0;
 	}
-
 	.app-container {
 		display: flex;
 		justify-content: space-between;
 		box-sizing: border-box;
 		height: 100vh;
 	}
-
 	.float-left {
 		padding-right: 20px;
 	}
-
 	.luntai {
 		height: 100%;
 	}
-
-
-
 	.float-left li {
 		padding: 0.8vw 0;
 		border-bottom: 1px solid #e9e9e9;
@@ -1148,11 +1168,9 @@
 		display: flex;
 		justify-content: space-between;
 	}
-
 	.datalist {
 		width: 280;
 	}
-
 	.float-center {
 		width: calc(100% - 300px);
 		min-width: 400px;
@@ -1160,7 +1178,6 @@
 		height: 100%;
 		overflow-y: scroll;
 	}
-
 	.float-center h4 {
 		background-color: #e1eefa;
 		text-align: center;
@@ -1168,19 +1185,15 @@
 		line-height: 48px;
 		margin: 0;
 	}
-
-
 	.float-right .title {
 		color: #fa7651;
 		font-size: 16px;
 	}
-
 	.float-right li i {
 		color: #407fbd;
 		font-weight: bold;
 		width: 20px;
 	}
-
 	.float-right li {
 		padding: 0.8vw 0;
 		border-bottom: 1px solid #e9e9e9;
@@ -1191,11 +1204,9 @@
 		padding-left: 10px;
 		box-sizing: border-box;
 	}
-
 	.float-right li span {
 		margin-left: 15px;
 	}
-
 	.float-right p {
 		text-align: center;
 		display: flex;
@@ -1205,57 +1216,44 @@
 		font-size: 14px;
 		cursor: pointer;
 	}
-
 	.float-right p i {
 		font-size: 32px;
 	}
-
-	.lundow,
-	.luntop {
+	.lundow,.luntop {
 		width: 100%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		margin-top: 20px;
 	}
-
 	.greefont {
 		color: green;
 		position: absolute;
 		margin-top: 125px;
 		font-size: 16px;
 	}
-
 	:deep(.pagination-container .el-pagination) {
 		left: -22px !important;
 	}
-
 	:deep(.el-pagination.is-background .el-pager li) {
 		margin: 0 2px !important;
 	}
-
 	:deep(.el-pagination) {
 		width: 320px;
 	}
-
 	.anzhuang {
 		text-align: center;
 		margin-top: 30px;
 	}
-
 	:deep(.pagination-container .el-pagination) {
 		left: 0px !important;
 	}
-
 	:deep(.el-pagination.is-background .el-pager li) {
 		margin: 0 2px !important;
 	}
-
 	:deep(.el-pagination) {
 		width: 263px;
 	}
-
-
 	/* 轮位图 */
 	.luntop {
 		width: 100%;
@@ -1264,7 +1262,6 @@
 		align-items: center;
 		margin-top: 20px;
 	}
-
 	.baiban {
 		background: url("../../../assets/images/tyjk_lt_bai.png");
 		height: 130px;
@@ -1278,7 +1275,6 @@
 		justify-content: center;
 		cursor: pointer;
 	}
-
 	.down {
 		transform: rotate(90deg);
 	}

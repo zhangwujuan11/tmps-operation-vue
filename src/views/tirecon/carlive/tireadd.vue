@@ -77,7 +77,7 @@
 			  <el-input type="number" v-model="form.depth" placeholder="单位 mm"></el-input>
 			</el-form-item>
 			<el-form-item label="累计里程" prop="totalMileage">
-			  <el-input type="number" v-model="form.totalMileage" placeholder="单位km"></el-input>
+			  <el-input type="number" :disabled="form.category==0" v-model="form.totalMileage" placeholder="单位km"></el-input>
 			</el-form-item>
 		  </div>
 		  <div class="formdiv">
@@ -91,7 +91,7 @@
 				:clearable="true">
 				 <el-option :value="10" v-if="form.category==0" label="库存全新胎"/>
 				 <el-option :value="15" v-if="form.category!=0 && form.category!=3" label="待用胎"/>
-				 <el-option :value="30" v-if="form.category!=0 && form.category!=3" label="待修补"/>
+				 <el-option :value="30" v-if="form.category!=0 && form.category!=3" label="待维修胎"/>
 				 <el-option :value="11" v-if="form.category==3" label="库存翻新胎"/>
 				</el-select>
 		    </el-form-item>
@@ -259,6 +259,10 @@
 			  }
 			  if(form.value.measuredDepth =='' || form.value.measuredDepth ==null){
 			  	form.value.measuredDepth=0
+			  }
+			  if(form.value.firstDepth > form.value.depth){
+			  	ElMessage.error("初测花纹深度不能大于新胎花纹深度")
+				return false
 			  }
 			addtire(form.value).then(res=>{
 				if(res.code == 200){

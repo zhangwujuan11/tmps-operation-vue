@@ -31,7 +31,7 @@
 	  <!-- <el-table-column label="所属组织" align="center" prop="dictLabel"/> -->
       <el-table-column label="维护人" sortable align="center" prop="maintainer" />
       <el-table-column label="维护厂家" sortable align="center" prop="manufacturer" />
-      <el-table-column label="维护日期" sortable align="center" style="cursor: pointer;" width="120" prop="maintenanceDate"></el-table-column>
+      <el-table-column label="维护日期" sortable align="center" style="cursor: pointer;"  prop="maintenanceDate"></el-table-column>
       <el-table-column label="维护金额" sortable align="center" prop="totalCost" />
       <el-table-column label="创建时间" sortable align="center" prop="createTime" />
 	 <el-table-column label="操作" align="center" class-name="small-padding" width="150">
@@ -93,7 +93,7 @@
 				  <el-table-column label="花纹" align="center" prop="pattern" />
 				  <el-table-column label="维护金额"  align="center" prop="cost">
 					  <template #default="scope">
-						  <el-input v-model="scope.row.cost" @change="goatao()" v-if="!ischange"></el-input>
+						  <el-input v-model="scope.row.cost" @change="goatao()" v-if="!ischange" onkeyup="value=this.value.replace(/\D+/g,'')"></el-input>
 						  <span v-if="ischange">{{scope.row.cost}}</span>
 					  </template>
 				  </el-table-column>
@@ -147,7 +147,7 @@
 				  <el-table-column label="花纹" align="center" prop="pattern" />
 				  <el-table-column label="维护金额"  align="center" prop="cost">
 					  <template #default="scope">
-						  <el-input v-model="scope.row.cost" @change="goatao()" v-if="!ischange"></el-input>
+						  <el-input v-model="scope.row.cost" @change="goatao()" v-if="!ischange"  onkeyup="value=this.value.replace(/\D+/g,'')"></el-input>
 						  <span v-if="ischange">{{scope.row.cost}}</span>
 					  </template>
 				  </el-table-column>
@@ -196,7 +196,7 @@
 			
 			<div style="width: 100%;display: flex;justify-content: left;flex-wrap: wrap;margin-top: 20px;">
 				<el-form-item label="总金额" prop="totalCost" v-if="!ischange">
-				  <el-input  v-model="from.totalCost" ></el-input>
+				  <el-input  v-model="from.totalCost"  onkeyup="value=this.value.replace(/\D+/g,'')"></el-input>
 				</el-form-item>
 				<el-form-item label="总金额" prop="totalCost" v-if="ischange">
 				  <span>{{from.totalCost}}</span>
@@ -276,6 +276,7 @@
 			   :total="selectform.total"
 			   v-model:page="selectform.pageNum"
 			   v-model:limit="selectform.pageSize"
+			    @pagination="serchtire"
 			/>
 		</p>
 		<div style="text-align: center;margin-top: 35px;" slot="footer" class="dialog-footer">
@@ -313,7 +314,7 @@
 		manufacturer:'',
 		totalCost:null,
 		remark:'',
-		type:6,
+		type:4,
 		tireMaintenanceDetailBos:[]
 	})
 	const rules=({
@@ -388,7 +389,7 @@
 			manufacturer:'',
 			totalCost:null,
 			remark:'',
-			type:6,
+			type:4,
 			tireMaintenanceDetailBos:null
 		}
 		getKeyWX().then(res=>{

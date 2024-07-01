@@ -29,15 +29,38 @@
           <el-input placeholder="请输入RFID标签" v-model="queryform.rfidCode"></el-input>
         </el-form-item>
         <el-form-item label="胎号">
-			<el-select
+			<!-- <el-select
 			placeholder="请输入胎号" 
 			v-model="queryform.tireNo"
 			filterable
 			:clearable="true"
 			>
 			  <el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
-			</el-select>
+			</el-select> -->
+			<el-select v-model="queryform.tireNo"
+				filterable clearable placeholder="请选择"
+				allow-create
+				:default-first-option="true"
+				@blur="Nameblur($event)"
+				default-first-option>
+				<el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
+			 </el-select>
         </el-form-item>
+		<el-form-item label="车牌号">
+			<el-form-item label="" prop="mfteTitle">
+				<el-select
+				placeholder="请输入车牌号" 
+				v-model="queryform.vehicleNo"
+				:clearable="true"
+				filterable
+				>
+				  <el-option :label="item" :value="item" v-for="(item,index) in vehicleNoo" :key="index" />
+				</el-select>
+			</el-form-item>
+		</el-form-item>
+		<el-form-item label="自编号">
+		  <el-input placeholder="请输入自编号" v-model="queryform.insideTireNo"></el-input>
+		</el-form-item>
         <el-form-item label="轮胎状态">
           <el-select placeholder="请选择" v-model="queryform.stockStatus" clearable>
             <el-option
@@ -79,9 +102,21 @@
 			  @change="wetiem"
           />
         </el-form-item>
+		<el-form-item label="质保周期">
+			<el-select
+			 placeholder="请选择质保周期" 
+			 v-model="queryform.qualityPeriod"
+			 :clearable="true"
+			>
+			 <el-option label="正常" :value="0"/>
+			 <el-option label="即将过期" :value="1"/>
+			 <el-option label="已过期" :value="-1"/>
+			</el-select>
+		  <!-- <el-input placeholder="请输入花纹型号"  v-model="queryform.pattern"></el-input> -->
+		</el-form-item>
     </el-form>
     <div style="text-align: center;">
-      <el-button type="primary" @click="getList"><i class="el-icon-search"></i> 查询</el-button>
+      <el-button type="primary" @click="getListserchbtn"><i class="el-icon-search"></i> 查询</el-button>
       <el-button @click="exportable" v-hasPermi="['tpms:maintenance:export']" ><i class="el-icon-upload2"></i>导出</el-button>
     </div>
     <el-radio-group v-model="queryformtwo.isUse" @change="radiofirst">
@@ -138,11 +173,14 @@
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
     </el-row>
 
-    <el-table :data="dataList" @selection-change="handleSelectionChange">
+    <el-table :data="dataList" ref="tableRef"
+	@selection-change="handleSelectionChange" 
+	@sort-change="headerclick($event)">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="胎号" sortable align="center" prop="tireNo" width="180"/>
-     <!-- <el-table-column label="所属组织" align="center" prop="companyName">
-      </el-table-column> -->
+      <el-table-column label="胎号"  sortable align="center" prop="tireNo" width="180"/>
+      <el-table-column label="车牌号" sortable align="center" prop="vehicleNo" />
+     <el-table-column label="自编号" sortable align="center" prop="insideTireNo">
+      </el-table-column>
 	  <el-table-column label="所属仓库" sortable align="center" prop="warehouseName">
 	  </el-table-column>
 	  <el-table-column v-if="feishow" sortable label="车牌号" align="center" prop="vehicleNo">
@@ -186,7 +224,7 @@
        :total="total"
        v-model:page="queryform.pageNum"
        v-model:limit="queryform.pageSize"
-       @pagination="getList"
+       @pagination="pagetablelist"
     />
     <!-- 轮胎详情 -->
     <el-dialog :title="title" v-model="open" width="45%" append-to-body :close-on-click-modal="false">
@@ -326,7 +364,6 @@
 			  <el-button @click="leng=false">取消</el-button>
 			</div>
 	    </el-form>
-	    
 	</el-dialog>
 	
 	<!-- 仓库轮胎调拨 -->
@@ -408,7 +445,7 @@
 			   <carlive :tid="tid"></carlive>
 		   </el-tab-pane>
 	       <el-tab-pane label="GPS阶段里程" name="third">
-			   <gpsfrom :tid="tid"></gpsfrom>
+			   <gpsfrom :tid="tid" :tireNo="tireNo"></gpsfrom>
 		   </el-tab-pane>
 	       <el-tab-pane label="维护记录" name="fourth">
 			   <fourthfrom :tid="tid"></fourthfrom>
@@ -454,6 +491,7 @@
 	const time=ref([])
 	const deptOptions=ref([])
 	const queryformtwo=ref({})
+	const tireNo=ref('')
 	const queryform=ref({
 		pageNum:1,
 		pageSize:10,
@@ -513,7 +551,51 @@
 	
 	const tirelistcount=ref({})
 	const dilogs = dilog();
-	// 获取table数据
+	
+	// 排序点击
+	function headerclick(e){
+		let num=e.column.no
+		let isup= ''
+		if(e.order== 'ascending'){
+			isup=1
+		}else if(e.order== 'descending'){
+			isup=0
+		}else{
+			isup=''
+			num=''
+		}
+		queryform.value.fieldSort  = num
+		queryform.value.fieldSortFlag = isup
+		let obj = queryform.value
+		obj.isUse=queryformtwo.value.isUse
+		obj.type=queryformtwo.value.isUse
+		obj.tblCategory=queryformtwo.value.tblCategory
+		obj.tblStockStatus=queryformtwo.value.tblStockStatus
+		obj.sensorStatus=queryformtwo.value.sensorStatus
+		obj.pageNum=1
+		obj.pageSize=10
+		tirelist(obj).then(res=>{
+			dataList.value=res.data.items
+			total.value=res.data.total
+			dilogs.$patch({ tirelist: false })
+		})
+	}
+	// 分页列表
+	function pagetablelist(){
+		let obj = queryform.value
+		obj.isUse=queryformtwo.value.isUse
+		obj.type=queryformtwo.value.isUse
+		obj.tblCategory=queryformtwo.value.tblCategory
+		obj.tblStockStatus=queryformtwo.value.tblStockStatus
+		obj.sensorStatus=queryformtwo.value.sensorStatus
+		tirelist(obj).then(res=>{
+			dataList.value=res.data.items
+			total.value=res.data.total
+			dilogs.$patch({ tirelist: false })
+		})
+	}
+	
+	// 获取table数据基础
 	function getList(){
 		queryformtwo.value.isUse=''
 		queryformtwo.value.tblCategory=''
@@ -522,7 +604,7 @@
 		let obj = queryform.value
 		obj.type=''
 		obj.tblCategory=''
-		obj.stockStatus=''
+		// obj.stockStatus=''
 		obj.tblStockStatus=''
 		obj.isUse=''
 		obj.sensorStatus=''
@@ -535,6 +617,58 @@
 			dilogs.$patch({ tirelist: false })
 		})
 	}
+	// 查询table
+	function getListserchbtn(){
+		proxy.$refs["tableRef"].clearSort()
+		proxy.$refs["tableRef"].clearFilter()
+		
+		queryform.value.fieldSort  = ''
+		queryform.value.fieldSortFlag = ''
+		queryformtwo.value.isUse=''
+		queryformtwo.value.tblCategory=''
+		queryformtwo.value.tblStockStatus=''
+		queryformtwo.value.sensorStatus=''
+		let obj = queryform.value
+		obj.type=''
+		obj.tblCategory=''
+		obj.tblStockStatus=''
+		obj.isUse=''
+		obj.sensorStatus=''
+		tirecount(obj).then(data=>{
+			tirelistcount.value=data.data
+		})
+		tirelist(obj).then(res=>{
+			dataList.value=res.data.items
+			total.value=res.data.total
+			dilogs.$patch({ tirelist: false })
+		})
+	}
+	// 分类查询
+	function getListtwo(){
+		proxy.$refs["tableRef"].clearSort()
+		proxy.$refs["tableRef"].clearFilter()
+		queryform.value.fieldSort  = ''
+		queryform.value.fieldSortFlag = ''
+		let obj = queryform.value
+		obj.isUse=queryformtwo.value.isUse
+		obj.type=queryformtwo.value.isUse
+		obj.tblCategory=queryformtwo.value.tblCategory
+		obj.tblStockStatus=queryformtwo.value.tblStockStatus
+		obj.sensorStatus=queryformtwo.value.sensorStatus
+		
+		tirecount(queryform.value).then(data=>{
+			tirelistcount.value=data.data
+		})
+		tirelist(obj).then(res=>{
+			dataList.value=res.data.items
+			total.value=res.data.total
+			dilogs.$patch({ tirelist: false })
+		})
+	}
+	
+	function Nameblur(e) {
+		queryform.value.tireNo=e.target.value
+	   }
 	function getListhree(){
 		queryformtwo.value.isUse='0'
 		queryformtwo.value.tblCategory=''
@@ -554,23 +688,7 @@
 			dilogs.$patch({ tirelist: false })
 		})
 	}
-	function getListtwo(){
-		let obj = queryform.value
-		obj.isUse=queryformtwo.value.isUse
-		obj.type=queryformtwo.value.isUse
-		obj.tblCategory=queryformtwo.value.tblCategory
-		obj.tblStockStatus=queryformtwo.value.tblStockStatus
-		obj.sensorStatus=queryformtwo.value.sensorStatus
-		
-		tirecount(queryform.value).then(data=>{
-			tirelistcount.value=data.data
-		})
-		tirelist(obj).then(res=>{
-			dataList.value=res.data.items
-			total.value=res.data.total
-			dilogs.$patch({ tirelist: false })
-		})
-	}
+	
 	function fatt(e){
 		return tirelistcount.value[e]
 	}
@@ -764,6 +882,7 @@
 			tid.value = i.tireId
 			xiangqing.value=true
 		})
+		tireNo.value=i.tireNo
 	} 
 	// mounted
 	onMounted(()=>{

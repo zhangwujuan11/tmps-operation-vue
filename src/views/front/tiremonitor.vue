@@ -162,6 +162,46 @@
 							</div>
 						</div>
 					</div>
+					<div v-if="item.axisNumber == 0 " style="display: flex;justify-content: center;width: 100%;">
+						<div v-for="(its) in item.spareTireCode" :key="its.deviceNumber" style="margin: 0 20px;">
+							<div v-if="its.infodata != null">
+								<div class="lunbox down" v-if="its.infodata.alarmLevel==10000"
+								 @click="windowshowdetail(its.infodata.tireId,its.infodata.tirePosition )">
+									<div class="decs">
+										<span v-if="its.infodata.pressure">{{(its.infodata.pressure).toFixed(2)}}</span>
+										<span v-if="!its.infodata.pressure">--</span>
+										<span v-if="its.infodata.temperature">{{its.infodata.temperature}}</span>
+										<span v-if="!its.infodata.temperature">--</span>
+										<span class="greefont" v-if="its.infodata.coldPressure">冷{{its.infodata.coldPressure}}</span>
+										<span class="greefont" v-if="!its.infodata.coldPressure">冷0.0</span>
+									</div>
+								</div>
+								<div class="lunbox2 down" v-else-if="its.infodata.alarmLevel==10501"
+								 @click="windowshowdetail(its.infodata.tireId,its.infodata.tirePosition )">
+									<div class="decs">
+										<span v-if="its.infodata.pressure">{{(its.infodata.pressure).toFixed(2)}}</span>
+										<span v-if="!its.infodata.pressure">--</span>
+										<span v-if="its.infodata.temperature">{{its.infodata.temperature}}</span>
+										<span v-if="!its.infodata.temperature">--</span>
+										<span class="greefont" v-if="its.infodata.coldPressure">冷{{its.infodata.coldPressure}}</span>
+										<span class="greefont" v-if="!its.infodata.coldPressure">冷0.0</span>
+									</div>
+								</div>
+								<div class="lunbox3 down"  v-else
+								 @click="windowshowdetail(its.infodata.tireId,its.infodata.tirePosition )">
+									<div class="decs">
+										<span v-if="its.infodata.pressure">{{(its.infodata.pressure).toFixed(2)}}</span>
+										<span v-if="!its.infodata.pressure">--</span>
+										<span v-if="its.infodata.temperature">{{its.infodata.temperature}}</span>
+										<span v-if="!its.infodata.temperature">--</span>
+										<span class="greefont" v-if="its.infodata.coldPressure">冷{{its.infodata.coldPressure}}</span>
+										<span class="greefont" v-if="!its.infodata.coldPressure">冷0.0</span>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
 				</div>
 			</div>
 			<!-- 挂车 -->
@@ -240,6 +280,50 @@
 							</div>
 						</div>
 					</div>
+					
+					
+					<div v-if="items.axisNumber == 0 " style="display: flex;justify-content: center;width: 100%;">
+						<div v-for="(its) in items.spareTireCode" :key="its.deviceNumber"  style="margin: 0 20px;">
+							<div v-if="its.infodata != null">
+								<div class="lunbox down" v-if="its.infodata.alarmLevel==10000"
+								 @click="windowshowdetail(its.infodata.tireId,its.infodata.tirePosition )">
+									<div class="decs">
+										<span v-if="its.infodata.pressure">{{(its.infodata.pressure).toFixed(2)}}</span>
+										<span v-if="!its.infodata.pressure">--</span>
+										<span v-if="its.infodata.temperature">{{its.infodata.temperature}}</span>
+										<span v-if="!its.infodata.temperature">--</span>
+										<span class="greefont" v-if="its.infodata.coldPressure">冷{{its.infodata.coldPressure}}</span>
+										<span class="greefont" v-if="!its.infodata.coldPressure">冷0.0</span>
+									</div>
+								</div>
+								<div class="lunbox2 down" v-else-if="its.infodata.alarmLevel==10501"
+								 @click="windowshowdetail(its.infodata.tireId,its.infodata.tirePosition )">
+									<div class="decs">
+										<span v-if="its.infodata.pressure">{{(its.infodata.pressure).toFixed(2)}}</span>
+										<span v-if="!its.infodata.pressure">--</span>
+										<span v-if="its.infodata.temperature">{{its.infodata.temperature}}</span>
+										<span v-if="!its.infodata.temperature">--</span>
+										<span class="greefont" v-if="its.infodata.coldPressure">冷{{its.infodata.coldPressure}}</span>
+										<span class="greefont" v-if="!its.infodata.coldPressure">冷0.0</span>
+									</div>
+								</div>
+								<div class="lunbox3 down"  v-else
+								 @click="windowshowdetail(its.infodata.tireId,its.infodata.tirePosition )">
+									<div class="decs">
+										<span v-if="its.infodata.pressure">{{(its.infodata.pressure).toFixed(2)}}</span>
+										<span v-if="!its.infodata.pressure">--</span>
+										<span v-if="its.infodata.temperature">{{its.infodata.temperature}}</span>
+										<span v-if="!its.infodata.temperature">--</span>
+										<span class="greefont" v-if="its.infodata.coldPressure">冷{{its.infodata.coldPressure}}</span>
+										<span class="greefont" v-if="!its.infodata.coldPressure">冷0.0</span>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					
+					
 				</div>
 			</div>
 		</div>
@@ -430,7 +514,7 @@
 				// 初次加载车牌号列表后请求第一辆车子的轮胎信息
 				if(res.code ==200){
 					if(res.data != null){
-						if(res.data.items == null){ElMessage.error("无车辆信息")}
+						if(res.data.items == null){console.log("无车辆信息")}
 						lidatas.value=res.data.items
 						total.value=res.data.total
 						getpicture(arr,0)
@@ -446,7 +530,7 @@
 				// 初次加载车牌号列表后请求第一辆车子的轮胎信息
 				if(res.code ==200){
 					if(res.data != null){
-						if(res.data.items == null){ElMessage.error("无车辆信息")}
+						if(res.data.items == null){console.log("无车辆信息")}
 						lidatas.value=res.data.items
 						total.value=res.data.total
 						getpicture(lidatas.value[0].vehicle,0)
@@ -471,9 +555,13 @@
 		chenindev.value = index
 		carid.value=data
 		lastpointer(carid.value).then(datas=>{
-			let obj=[
-				datas.data.longitude,datas.data.latitude
-			]
+			let obj=[]
+			if(datas.data){
+				obj=[ datas.data.longitude,datas.data.latitude]
+			}else{
+				obj=[ 119.28 , 26.08]
+			}
+			
 			readlocotion(obj).then(datast=>{
 				addressinfo.value =datast.data.regeocode.addressComponent.province+" " + datast.data.regeocode.addressComponent.city+" " + datast.data.regeocode.addressComponent.district
 			})
@@ -484,7 +572,7 @@
 		getcarinfo(data).then(yds=>{
 			carclickinfo.value=yds.data
 		})
-		gettirepicture({id:data,tireStatus:1}).then(res=>{
+		gettirepicture({id:data,tireStatus:0}).then(res=>{
 			// 轮胎信息
 				// 判断主挂车盒子
 				if(res.data.mainList != null){
@@ -513,6 +601,15 @@
 											if(tirePositionlist[j].tirePosition== item.rightTireCode[i].positionCode){
 												item.rightTireCode[i].infodata=tirePositionlist[j]
 											}
+									}
+								}
+							}else{
+								for (let i = 0; i < item.spareTireCode.length; i++) {
+									item.spareTireCode[i].infodata = null
+									for (let j = 0; j < tirePositionlist.length; j++) {
+										if (tirePositionlist[j].tirePosition == item.spareTireCode[i].positionCode) {
+											item.spareTireCode[i].infodata = tirePositionlist[j]
+										}
 									}
 								}
 							}
@@ -550,6 +647,15 @@
 										if(tirePosition[j].tirePosition== item.rightTireCode[i].positionCode){
 											item.rightTireCode[i].infodata=tirePosition[j]
 										}
+								}
+							}
+						}else{
+							for (let i = 0; i < item.spareTireCode.length; i++) {
+								item.spareTireCode[i].infodata = null
+								for (let j = 0; j < tirePosition.length; j++) {
+									if (tirePosition[j].tirePosition == item.spareTireCode[i].positionCode) {
+										item.spareTireCode[i].infodata = tirePosition[j]
+									}
 								}
 							}
 						}
@@ -831,5 +937,13 @@ const gaodedilogShow=function(){
 	.float-left .checkedli{
 		color:#407fbd;
 		border-bottom: 1px solid #407fbd;
+	}
+	.down{
+		transform: rotate(90deg);
+	}
+	.down .decs{
+		transform: rotate(270deg);
+		margin-top: 0;
+		margin-left: 0px;
 	}
 </style>

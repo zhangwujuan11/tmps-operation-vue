@@ -29,8 +29,8 @@
       <el-table-column label="序号" align="center" type="index" width="80px"/>
       <el-table-column label="仓库名称" align="center" prop="warehouseName">
       </el-table-column>
-      <el-table-column label="上限库存数量" align="center" prop="maxCount" />
-      <el-table-column label="下限库存数量" align="center" prop="minCount" />
+      <!-- <el-table-column label="上限库存数量" align="center" prop="maxCount" />
+      <el-table-column label="下限库存数量" align="center" prop="minCount" /> -->
       <el-table-column label="仓库类型"  align="center" style="cursor: pointer;" width="120">
 		  <template #default="scope">
 			  <div>
@@ -78,12 +78,12 @@
 				<el-form-item label="仓库名称" prop="warehouseName">
 				  <el-input placeholder="请输入仓库名称" v-model="form.warehouseName"></el-input>
 				</el-form-item>
-				<el-form-item label="上限库存数量" prop="maxCount">
+				<!-- <el-form-item label="上限库存数量" prop="maxCount">
 				  <el-input type="number" placeholder="请输入上限库存数量" v-model="form.maxCount"></el-input>
 				</el-form-item>
 				<el-form-item label="下限库存数量" prop="minCount">
 				  <el-input type="number" placeholder="请输入下限库存数量" v-model="form.minCount"></el-input>
-				</el-form-item>
+				</el-form-item> -->
 			</div>
         </el-form>
         <div style="text-align: center;" slot="footer" class="dialog-footer">
@@ -145,16 +145,16 @@
 	}
 	const  rules=({
 	    // companyName: [{ required: true, message: "所属组织不能为空", trigger: "blur" }],
-		maxCount: [{
-		   pattern:/^[0-9]+(\.\d+)?$/,
-		   message: "输入正确的上限库存数量",
-		   trigger: "blur",
-		}],
-		minCount: [{
-		   pattern:/^[0-9]+(\.\d+)?$/,
-		   message: "输入正确的下限库存数量",
-		   trigger: "blur",
-		}],
+		// maxCount: [{
+		//    pattern:/^[0-9]+(\.\d+)?$/,
+		//    message: "输入正确的上限库存数量",
+		//    trigger: "blur",
+		// }],
+		// minCount: [{
+		//    pattern:/^[0-9]+(\.\d+)?$/,
+		//    message: "输入正确的下限库存数量",
+		//    trigger: "blur",
+		// }],
 		warehouseName: [{ required: true, message: "仓库名称不能为空", trigger: "blur" }],
 	  }) 
   const  title=ref('')
@@ -197,16 +197,16 @@
 				form.value.sysUserid=localStorage.getItem('userid')
 	  		  proxy.$refs["menuRef"].validate(valid => {
 	  		    if (valid) {
-					if(form.value.minCount == undefined || form.value.minCount == ''){
-						form.value.minCount=0
-					}
-					if(form.value.maxCount ==  undefined || form.value.maxCount == ''){
-						form.value.maxCount=0
-					}
-					if(Number(form.value.maxCount)  < Number(form.value.minCount) ){
-						ElMessage.error("上限库存数量不能小于下限库存数量")
-						return false
-					}else{
+					// if(form.value.minCount == undefined || form.value.minCount == ''){
+					// 	form.value.minCount=0
+					// }
+					// if(form.value.maxCount ==  undefined || form.value.maxCount == ''){
+					// 	form.value.maxCount=0
+					// }
+					// if(Number(form.value.maxCount)  < Number(form.value.minCount) ){
+					// 	ElMessage.error("上限库存数量不能小于下限库存数量")
+					// 	return false
+					// }else{
 						if(form.value.id){
 							updatawarehouse(form.value).then(res=>{
 								if(res.code == 200){
@@ -228,7 +228,7 @@
 								}
 							})
 						}
-					}
+					// }
 	  			}else{
 				ElMessage.error("请完整填写信息")
 				}

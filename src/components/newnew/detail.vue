@@ -53,6 +53,13 @@
 			</el-tab-pane>
 		</el-tabs>
 		总共 {{total}} 条记录
+		<pagination
+		   v-show="total > 0"
+		   :total="total"
+		   v-model:page="querfrom.pageNum"
+		   v-model:limit="querfrom.pageSize"
+		   @pagination="getdata"
+		/>
 	</el-dialog>
 </template>
 
@@ -82,15 +89,10 @@
 	const tableData = ref([])
 	const total=ref(0)
 	function getdata(i){
-		// detailtab(obj).then(res=>{
-		// 	// console.log(res)
-		// })
-		
-	}
-	
-	watch(activeName,(val)=>{
-		if(val == 'first'){
+		if(activeName.value == 'first'){
 			tirelistOT({
+				pageNum:querfrom.value.pageNum,
+				pageSize:querfrom.value.pageSize,
 				install:0,
 				vehicleId:props.carid
 			}).then(res=>{
@@ -99,6 +101,32 @@
 			})
 		}else{
 			gethistor({
+				pageNum:querfrom.value.pageNum,
+				pageSize:querfrom.value.pageSize,
+				vehicleId:props.carid,
+				type:'【轮胎拆卸】'
+			}).then(res=>{
+				tableData.value=res.data.items
+				total.value=res.data.total
+			})
+		}
+	}
+	
+	watch(activeName,(val)=>{
+		if(val == 'first'){
+			tirelistOT({
+				pageNum:querfrom.value.pageNum,
+				pageSize:querfrom.value.pageSize,
+				install:0,
+				vehicleId:props.carid
+			}).then(res=>{
+				tableData.value=res.data.items
+				total.value=res.data.total
+			})
+		}else{
+			gethistor({
+				pageNum:querfrom.value.pageNum,
+				pageSize:querfrom.value.pageSize,
 				vehicleId:props.carid,
 				type:'【轮胎拆卸】'
 			}).then(res=>{
@@ -114,7 +142,9 @@
 			 activeName.value='first'
 			tirelistOT({
 				install:0,
-				vehicleId:props.carid
+				vehicleId:props.carid,
+				pageNum:querfrom.value.pageNum,
+				pageSize:querfrom.value.pageSize,
 			}).then(res=>{
 				tableData.value=res.data.items
 				total.value=res.data.total

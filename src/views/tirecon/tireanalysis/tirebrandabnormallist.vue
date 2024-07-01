@@ -14,6 +14,17 @@
 		    <el-option :label="item" :value="item" v-for="(item,index) in vehicleNoo" :key="index" />
 		  </el-select>
 		</el-form-item>
+		<!-- <el-form-item label="组织名称">
+		   <el-tree-select
+			:default-expand-all="true"
+			  v-model="queryform.fleetId"
+			  :data="deptOptions"
+			  :props="{ value: 'deptId', label: 'deptName', children: 'children' }"
+			  value-key="deptId"
+			  placeholder="选择组织"
+			  check-strictly
+		   />
+		</el-form-item> -->
 		<div style="text-align: center;">
 		  <el-button type="primary" @click="getList"><i class="el-icon-search"></i> 查询</el-button>
 		  <el-button @click="expor"  v-hasPermi="['tpms:info:export']"><i class="el-icon-upload2"></i>导出</el-button>
@@ -71,7 +82,7 @@
 
 <script setup lang="ts" name="Tireabnormallist">
 	import { ref, onMounted } from 'vue';
-	// import { ElMessage, ElMessageBox } from 'element-plus'
+	import { listDept } from "@/api/system/dept";
 	import {abnormallist, abnormalinfo, exporttire} from '@/api/tirecon.js'
 	import { exportxlxs } from '@/api/carlive'
 	import {vehicleNo} from '@/api/systensettings'
@@ -83,6 +94,7 @@
 		vehicleNo:'',
 		type:'1'
 	})
+	const deptOptions = ref([]);
 	const dictList=ref([])
 	const vehicleNoo=ref([])//车牌号下拉框
 	const lidatas=ref([])
@@ -158,6 +170,10 @@
 				vehicleNoo.value=res.data.items
 			}
 		})
+		listDept().then(response => {
+		  deptOptions.value = proxy.handleTree(response.data, "deptId");
+		});
+			
 	})
 	const loading = ref(false)
 	const open=ref(false)

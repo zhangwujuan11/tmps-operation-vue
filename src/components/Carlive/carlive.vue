@@ -152,6 +152,7 @@
 			pageSize:pageSize.value
 		}).then(res => {
 			tabledatacar.value = res.data.items
+			total.value= res.data.total
 			let json = tabledatacar.value ||[]
 			if (json.length>0) {
 			    var html = "";

@@ -54,7 +54,7 @@
 	   <el-table-column v-if="taihao" label="胎号" align="center" prop="tireNo" />
 	    <el-table-column v-if="chuanganqi" label="传感器ID" align="center" prop="senderId" />
 		<el-table-column v-if="lunwei" label="轮位" align="center" prop="tirePositionDesc" />
-		<el-table-column v-if="querfrom.state == 110 || querfrom.state == 111 || querfrom.state == 112 " label="时间" align="center" prop="createdTime" />
+		<el-table-column v-if="querfrom.state == 110 || querfrom.state == 111 || querfrom.state == 112 " label="时间" align="center" prop="createTime" />
        <el-table-column label="操作" align="center" class-name="small-padding">
 		   <template #default="scope">
 			   <el-button

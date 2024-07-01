@@ -13,6 +13,21 @@
 		   <el-option :label="item" :value="item" v-for="(item,index) in vehicleNoo" :key="index" />
 		 </el-select>
 		</el-form-item>
+		<el-form-item label="胎号" prop="tireNo">
+			<el-select v-model="queryform.tireNo"
+				filterable clearable placeholder="请选择"
+				allow-create
+				:default-first-option="true"
+				@blur="Nameblur($event)"
+				default-first-option>
+				<el-option :label="item.tireNo" :value="item.tireNo" v-for="(item,index) in chetai" :key="index" />
+			 </el-select>
+		</el-form-item>
+		
+		
+		
+		
+		
 		<!-- <el-form-item label="车牌号">
 		  <el-select 
 		  placeholder="请输入车牌号" 
@@ -98,7 +113,9 @@
 		vehicleNo:'',
 		tipDepth: 6,
 		install:0,
+		tireNo:''
 	})
+	const chetai=ref([])//车胎列表
 	function getList(){
 		tirelist(queryform.value).then(res=>{
 			lidatas.value=res.data.items
@@ -106,7 +123,9 @@
 		})
 	}
 	
-	
+	function Nameblur(e) {
+		queryform.value.tireNo=e.target.value
+	   }
 	// 导出
 	function exportable(){
 		expotires(queryform.value).then(res=>{
@@ -147,7 +166,12 @@
 				getList()
 			}
 		})
-		
+		// 车胎
+		tirelist({pageNum:1,pageSize:10000}).then(res=>{
+			if(res.code == 200){
+				chetai.value=res.data.items
+			}
+		})
 		
 	})
 	 

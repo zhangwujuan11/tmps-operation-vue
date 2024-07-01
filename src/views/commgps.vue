@@ -1,15 +1,15 @@
 <template>
 	<div style="width: 100%;height: 100%;">
-		<div style="width: 100%;position: fixed;top:15px;left: 0;z-index: 99;">
-			<p style="width: 100%;display: flex;justify-content: space-around;align-items: center;">
+		<div style="width: 100%;position: fixed;top:15px;left: 0;z-index: 99; display: flex;align-items: center;justify-content: center;">
+			<p style="display: flex;justify-content: space-around;align-items: center;flex-direction: column;">
 				<el-date-picker
 				v-model="time[0]"
 				type="datetime"
 				placeholder="开始时间"
 				format="YYYY/MM/DD HH:mm:ss"
 				value-format="x"
+				style="margin-bottom: 5px;"
 				/>
-				至
 				<el-date-picker
 				v-model="time[1]"
 				type="datetime"
@@ -17,16 +17,8 @@
 				format="YYYY/MM/DD HH:mm:ss"
 				value-format="x"
 			  />
-			  <!-- <el-date-picker
-			    v-model="time"
-			   type="datetimerange"
-			  start-placeholder="开始日期"
-			  end-placeholder="结束日期"
-			   format="YYYY/MM/DD HH:mm:ss"
-			   value-format="x"
-			  /> -->
-			  <el-button  type="primary" style="margin-left:10px;" @click="isShowMarker()">查询</el-button>
 			</p>
+			<el-button  type="primary" style="margin-left:10px;" @click="isShowMarker()">查询</el-button>
 		</div>
 		<div id="mapContainer">
 		</div>
@@ -108,15 +100,22 @@
 			}).then((AMap) => {
 				gpsguijiapplast(carid.value,idss.value).then(res=>{
 					lastpo.value=res.data.data
+					
 				amap.value = AMap
+				let test=[] 
+				if(lastpo.value){
+					test = [lastpo.value.longitude, lastpo.value.latitude]
+				}else{
+					test =  [119.28, 26.08]
+				}
 				 map.value = new AMap.Map('mapContainer', {
-					center: [lastpo.value.longitude, lastpo.value.latitude] ||  [119.28, 26.08],
+					center:test,
 					zoom: 17, //这个越大 地图越大 看的地图详细
 					resizeEnable: true,
 				})
 			var srtm =	new AMap.Marker({
 					map: map.value,
-					position: [lastpo.value.longitude,lastpo.value.latitude],
+					position: test,
 					icon: gos,
 					autoRotation: true,
 				});
@@ -267,7 +266,8 @@
 <style scoped>
 	#mapContainer {
 		width: 100%;
-		height: 90vh;
+		height: 100vh;
+		/* margin-top: 10vh; */
 	}
 	:deep(.el-dialog:not(.is-fullscreen)) {
 		margin-top: 0vh !important;
